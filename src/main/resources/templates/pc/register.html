@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<span th:if="${result} > 0"> 
+		<script type="text/javascript">
+		alert("가맹문의가 완료되었습니다. 좌석배치와 요금설정을 해주세요.");
+		location.href = "/main/main.do";
+		</script>
+	</span>
+	<span th:if="${result} == 0"> 
+		<script type="text/javascript">
+			alert("사업자등록번호나 전화번호를 다시 확인해주세요.");
+			history.back();
+		</script>
+	</span>
+</body>
+</html>

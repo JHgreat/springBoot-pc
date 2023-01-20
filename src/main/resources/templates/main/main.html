@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">   
+$(document).ready( function() {
+
+$("#headers").load("/fragments/header.do");  
+$("#footers").load("/fragments/footer.do");  
+
+});
+</script>
+<div id="headers"></div> 
+</head>
+<body>
+<button onclick="location.href='/member/loginForm.do'">로그인</button>
+<br>
+<button onclick="location.href='/member/joinForm.do'">회원가입</button>
+<select>
+<option>
+<th:block th:text ="1"></th:block>
+</option>
+<option>
+<th:block th:text ="2"></th:block>
+</option>
+<option>
+<th:block th:text ="4"></th:block>
+</option>
+</select>
+<div id="footers"></div>
+</body>
+</html>

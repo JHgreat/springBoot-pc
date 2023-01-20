@@ -1,0 +1,1 @@
+insert into dept values (11,'영업팀','김포');

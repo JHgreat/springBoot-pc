@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<span th:if="${result} > 0">
+		<script type="text/javascript" th:inline="javascript">	
+			alert("탈퇴되었습니다.");		
+			var pageNum = /*[[${pageNum}]]*/{};
+			location.href = "/admin/memberList.do?pageNum="+pageNum;	
+		</script>	
+	</span>
+	<span th:if="${result} == 0"> 
+		<script type="text/javascript">
+			history.go(-1);
+		</script>
+	</span>
+</body>
+</html>
