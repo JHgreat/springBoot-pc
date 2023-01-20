@@ -19,7 +19,7 @@ public class AdminController {
 	@Autowired
 	private MemberService ms;
 	
-	@RequestMapping("pcList")
+	@RequestMapping("/admin/pcList.do")
 	public String pcList(Pc pc, Model model, String pageNum) {
 		int  rowPerPage = 10;
 		if (pageNum == null || pageNum.equals("")) pageNum="1";
@@ -32,9 +32,14 @@ public class AdminController {
 		List<Pc> pcList = ps.list(pc);
 		PageBean pb = new PageBean(currentPage, rowPerPage, total);
 		String[] title = {"pc방 이름","위치","정보"};
+		String[] Etitle = {"pcname","pcaddr","pcinfo"};
+		
+		model.addAttribute("total", total);
+		model.addAttribute("pageNum", pageNum);
 		model.addAttribute("pcList", pcList);
 		model.addAttribute("pb", pb);
 		model.addAttribute("title", title);
+		model.addAttribute("Etitle", Etitle);
 		
 		return "/admin/pcList";
 	}

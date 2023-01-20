@@ -14,5 +14,8 @@ public class Bookmark {
 	private String pcname;
 	private String pcaddr;
 	private String pcinfo;
+	//paging
+	private int startRow;
+	private int endRow;
 		
 }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 기본 설정 -->
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">   
+
+
+$(document).ready( function() {
+	$("#headers").load("/fragments/header.do");  
+	$("#footers").load("/fragments/footer.do");  
+});
+</script>
+<!-- 기본 설정 -->
+<!-- 헤더, 스타일 -->
+<div id="headers"></div> 
+<style type="text/css">
+	body {
+		background-color: #2c3e50;
+	}
+	.content_center{
+		display: flex;
+		justify-content: center;
+		position: relative;
+		}
+	.total_content{
+		width: 90%; 
+		height: 90%;
+		border-radius: 20px;
+		background-color: white;
+		padding-left: 0;
+	}
+	.navi_admin{
+	float: left;
+	margin-top: 50px;
+	width: 200px;
+}
+	.form-control {
+	width: 200px;
+}
+.join_content {
+	display: flex;
+		justify-content: flex-end;
+}
+.paging {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+	.form_line {
+		display: flex;
+		justify-content: center;
+	}
+	.margin-btn {
+	margin: 0 2px;
+}
+</style>
+</head>
+<body>
+<div class="content_center">
+<div class="total_content">
+<div class="navi_admin">
+	<ul class="sidebar">
+		<li><a href="/admin/memberList.do">회원 관리</a></li>
+		<li><a href="/admin/pcList.do">pc방 관리</a></li>
+	</ul>
+</div>
+	<form action="/admin/pcList.do">
+		<input type="hidden" name="pageNum" value="1">
+		<div class="join_content">
+		<select name="searchKey" style="margin:5px;">
+			<th:block th:each="search, i : ${Etitle}">
+				<th:block th:if = "${search==pc.searchKey }">
+					<option th:value="${search}" selected="selected"><th:block th:text ="${title[i.index]}"></th:block></option>
+				</th:block>
+				<th:block th:if = "${search!=pc.searchKey }">
+					<option th:value="${search}" ><th:block th:text ="${title[i.index]}"></th:block></option>
+				</th:block>
+			</th:block>	
+		</select>
+		<input type="text" name="searchValue" th:value="${pc.searchValue}" class="form-control" placeholder="검색어를 입력하세요.">
+		<input type="submit" value="확인" class="btn btn-primary">
+		</div>
+	</form>
+	<div class="form_line">
+		<table class="table table-hover">
+			<tr class="table-primary">
+				<th>번호</th>
+				<th>pc방 이름</th>
+				<th>위치</th>
+				<th>승인여부</th>
+			</tr>
+			<th:block th:if ="${pcList == null}">
+				<tr>
+					<td colspan="4">회원이 없습니다.</td>
+				</tr>
+			</th:block>
+			<th:block th:if = "${pcList != null}">
+				<th:block th:with ="num=${total}">
+				<th:block th:with ="pageNum=${pageNum}">
+				<th:block th:each="pc2, status : ${pcList}">
+					<tr th:onclick="|location.href='@{/pc/pcMainForm.do(pcno=${pc2.pcno},pageNum=${pb.currentPage},searchKey=${pc.searchKey},searchValue=${pc.searchValue})}'|" style="cursor:hand">
+						<td th:text="${num-status.index}-${(pageNum-1)}*10" ></td>
+						<td th:text="${pc2.pcname }"></td>
+						<td th:text="${pc2.pcaddr}"></td>
+						<td>		
+							<th:block th:if ="${pc2.permit == 'n' }">
+								승인 대기중
+							</th:block>				
+							<th:block th:if ="${pc2.permit == 'y' }">
+								승인완료
+							</th:block>
+						</td>
+					</tr>
+				</th:block>
+				</th:block>
+				</th:block>
+			</th:block>
+		</table>
+	</div>
+		<ul class="pagination paging">
+			<!-- 시작 페이지가 pagePerBlock보다 크면 앞에 보여줄 것이 있다 -->
+			<th:block th:if ="${pb.startPage > pb.pagePerBlock }">
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/pcList.do(pageNum = 1, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}"> 
+					<i class="fas fa-angle-double-left"></i></a></li>
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/pcList.do(pageNum = ${pb.startPage-1}, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}"> 
+					<i class="fas fa-angle-left"></i></a></li>
+			</th:block>
+			<th:block th:each ="i : ${#numbers.sequence(pb.startPage,pb.endPage)}">
+				<th:block th:if ="${pb.currentPage==i }">
+					<li><a class="margin-btn btn btn-outline-primary active" th:href="@{/admin/pcList.do(pageNum = ${i}, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}" th:text="${i}"></a></li>
+				</th:block>
+				<!-- 
+				 -->
+				<th:block th:if ="${pb.currentPage!=i }">
+					<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/pcList.do(pageNum = ${i}, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}" th:text="${i}"></a></li>
+				</th:block>
+			</th:block>
+			<!-- 보여줄 것이 남아있는 경우에는 endPage보다 totalPage가 큰경우 ${pb.totalPage} -->
+			<th:block th:if ="${pb.endPage < pb.totalPage }">
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/pcList.do(pageNum = ${pb.endPage+1}, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}">
+					<i class="fas fa-angle-right"></i></a></li>
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/pcList.do(pageNum = ${pb.totalPage}, searchKey = ${pc.searchKey}, searchValue = ${pc.searchValue})}">
+					<i class="fas fa-angle-double-right"></i></a></li>
+			</th:block>
+		</ul>
+</div>
+</div>
+</body>
+</html>

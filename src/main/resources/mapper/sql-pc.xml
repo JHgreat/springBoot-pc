@@ -28,7 +28,7 @@
 	</select>
 	
 	<!-- 관리자 -->
-	<select id="pcList" parameterType="pc" resultType="pc">
+	<select id="list" parameterType="pc" resultType="pc">
 		select * from(select a.*, rowNum rn from(select * from pc 
 		<where>
 			<if test="searchValue!=null and searchValue!=''">
