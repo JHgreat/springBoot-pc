@@ -40,11 +40,11 @@ public interface PcDao {
 
 	int updateseatform(Pc pc);
 
-	Seat selectseat(int pcno);
+	Seat selectSeat(int pcno);
 
 	int insertSeat(Seat seat);
 
-	int updateseat(Seat seat);
+	int updateSeat(Seat seat);
 
 	Pc selectMno(int mno);
 

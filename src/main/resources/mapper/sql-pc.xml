@@ -89,7 +89,7 @@
 	</select>
 	
 	<update id="updatePc" parameterType="pc">
-		update pc set pcpno=#{pcpno},pcname=#{pcname},pcaddr=#{pcaddr},pclati=#{pclati},pclongi=#{pclongi},pcinfo=#{pcinfo},pcintro=#{pcintro},seatlow=#{seatlow},seatcol=#{seatcol}
+		update pc set pcpno=#{pcpno},pcname=#{pcname},pcaddr=#{pcaddr},pclati=#{pclati},pclongi=#{pclongi},pcinfo=#{pcinfo},pcintro=#{pcintro},seatlow=#{seatlow},seatcol=#{seatcol},imagename=#{imagename}
 		 where pcno=#{pcno}
 	</update>
 	<delete id="deletePi" parameterType="pcimage">
@@ -126,4 +126,16 @@
 			</if>
 		</where>
 	</select>
+	<!-- 요금설정 -->
+	<insert id="feeInsert" parameterType="fee">
+		insert into fee (pcno,w1000,w3000,w5000,w10000,w50000,w100000) values(#{pcno},#{w1000}, #{w3000}, #{w5000}, #{w10000}, #{w50000}, #{w100000})
+	</insert>
+	<!-- 요금 조회 -->
+	<select id="selectFee" parameterType="integer" resultType="fee">
+		select * from fee where pcno=#{pcno}
+	</select>
+	
+	<update id="feeUpdate" parameterType="fee">
+		update fee set w1000=#{w1000},w3000=#{w3000},w5000=#{w5000},w10000=#{w10000},w50000=#{w50000},w100000=#{w100000} where pcno=#{pcno}
+	</update>
 </mapper>

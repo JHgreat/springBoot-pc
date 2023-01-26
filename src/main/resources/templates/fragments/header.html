@@ -91,7 +91,7 @@ caption {
 }
 
 .welcome {
-width: 300px; 
+/* width: 300px;  */
 	height: 100%;
 	/* 	bottom: 0; */
 	/* 	vertical-align: bottom; */
@@ -134,12 +134,14 @@ width: 300px;
 		<div class="logo">
 			<a href="/main/main.do"><img alt="" src="/images/logo.png"></a>
 		</div>
-		<div class="move"  th:if= "${session.memberSession == null}">
+		<th:block  th:if= "${session.memberSession == null}">
+		<div class="move">
 				<button class="btn btn-secondary btn-register btn-sm" onclick='location.href="/member/loginForm.do"'>로그인</button>
 				<button class="btn btn-secondary btn-register btn-sm" onclick='location.href="/member/joinForm.do"'>회원가입</button>
 		</div>	
-		<div th:if= "${session.memberSession != null}">
-				<div th:if ="${session.memberSession.id == 'admin'}">
+		</th:block>
+		<th:block th:if= "${session.memberSession != null}">
+				<th:block th:if= "${session.memberSession.id == 'admin'}">
 					<div class="move">
 						<button class="btn btn-secondary btn-sm" onclick='location.href="/admin/memberList.do"'>관리자 페이지</button> 
 					</div>
@@ -151,23 +153,23 @@ width: 300px;
 							<a href="/member/logout.do">로그아웃</a>
 						</div>
 					</div>
-				</div>
-				<div th:if ="${session.memberSession.id != 'admin'}">
+				</th:block>
+				<th:block th:if ="${session.memberSession.id != 'admin'}">
 					<div class="move">
 						<div class="welcome">
-							<span th:text="${session.memberSession.nickName }"></span>님 환영합니다
+							<span th:text="${session.memberSession.nickName }+'님 환영합니다'"></span>
 						</div>
-						<div th:if ="${session.memberSession.identity == '점주'}">
-							<div th:if ="${session.memberSession.permitConfirm == -1}">
+						<th:block th:if ="${session.memberSession.identity == '점주'}">
+							<th:block th:if ="${session.memberSession.permitConfirm == -1}">
 								<button class="btn btn-secondary btn-register btn-sm" onclick='location.href = "/pc/registerForm.do"'>가맹점 문의</button>
-							</div>
-							<div th:if ="${session.memberSession.permitConfirm == 0}">
+							</th:block>
+							<th:block th:if ="${session.memberSession.permitConfirm == 0}">
 								<button class="btn btn-secondary btn-register btn-sm">승인대기 중..</button>
-							</div>
-							<div th:if ="${session.memberSession.permitConfirm == 1}">
+							</th:block>
+							<th:block th:if ="${session.memberSession.permitConfirm == 1}">
 								<button class="btn btn-secondary btn-register btn-sm" onclick="location.href='/pc/mypcUpdateForm.do'">가맹점 수정</button>
-							</div>
-						</div>	
+							</th:block>
+						</th:block>	
 					</div>
 					<div class="dropdown-position">
 						<div class="dropdown">
@@ -180,8 +182,8 @@ width: 300px;
 							</div>
 						</div>
 					</div>
-				</div>
-		</div>						
+				</th:block>
+		</th:block>						
 	</nav>
 </body>
 </html>

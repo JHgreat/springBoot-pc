@@ -63,14 +63,14 @@ public class PcServiceImpl implements PcService {
 	public int updateSeatform(Pc pc) {
 		return pd.updateseatform(pc);
 	}
-	public Seat selectseat(int pcno) {
-		return pd.selectseat(pcno);
+	public Seat selectSeat(int pcno) {
+		return pd.selectSeat(pcno);
 	}
 	public int insertSeat(Seat seat) {
 		return pd.insertSeat(seat);
 	}
 	public int updateSeat(Seat seat) {
-		return pd.updateseat(seat);
+		return pd.updateSeat(seat);
 	}
 	public Pc selectMno(int mno) {
 		return pd.selectMno(mno);

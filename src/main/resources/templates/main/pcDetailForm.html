@@ -127,7 +127,7 @@ $(document).ready( function() {
 	})
 	function bookmarkClick(pcno) {
 		// 피씨방 북마크 클릭
-		$.post("bookmark.do", "pcno="+pcno, function(data) {
+		$.post("/pc/bookmark.do", "pcno="+pcno, function(data) {
 			var imgSrc = data;
 			$(".bookmark").attr("src", imgSrc);
 		});
@@ -164,12 +164,15 @@ $(document).ready( function() {
 					<!-- Wrapper for slides -->
 					<div class="carousel-inner" role="listbox">
 						<div class="item active">
-							<img alt="" th:src="@{/images/${list[0].imagename}}">
+							<img alt="" th:src="@{/images/}+${list[0].imagename}">
 						</div>
-						<th:block th:each ="photo : ${list}">
+						<!-- @{/images/}+${session.memberSession.profile} -->
+						<th:block th:each ="photo,status : ${list}">
+							<th:block th:if = "${status.index != 0}">
 							<div class="item">
-								<img alt="" src="@{/images/${photo.imagename}}">
+								<img alt="" th:src="@{/images/}+${photo.imagename}">
 							</div>
+							</th:block>
 						</th:block>
 					</div>
 

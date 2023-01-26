@@ -73,10 +73,6 @@ public class MainController {
 		model.addAttribute("imgSrc", imgSrc);
 		model.addAttribute("pc", pc);
 		model.addAttribute("list", list);
-		System.out.println(list);
-		System.out.println(avgRating);
-		System.out.println(imgSrc);
-		System.out.println(pc);
 		return "/main/pcDetailForm";
 	}
 

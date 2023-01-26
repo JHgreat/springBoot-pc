@@ -38,7 +38,7 @@ public interface PcService {
 
 	int updateSeatform(Pc pc);
 
-	Seat selectseat(int pcno);
+	Seat selectSeat(int pcno);
 
 	int insertSeat(Seat seat);
 

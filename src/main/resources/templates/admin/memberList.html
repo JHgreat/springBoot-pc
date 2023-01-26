@@ -193,7 +193,7 @@ display: flex;
 					<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/memberList.do(pageNum = ${i}, searchKey = ${member1.searchKey}, searchValue = ${member1.searchValue})}" th:text="${i}"></a></li>
 				</th:block>
 			</th:block>
-			<!-- 보여줄 것이 남아있는 경우에는 endPage보다 totalPage가 큰경우 ${pb.totalPage} -->
+			<!-- 보여줄 것이 남아있는 경우에는 endPage보다 totalPage가 큰경우-->
 			<th:block th:if ="${pb.endPage < pb.totalPage }">
 				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/admin/memberList.do(pageNum = ${pb.endPage+1}, searchKey = ${member1.searchKey}, searchValue = ${member1.searchValue})}">
 					<i class="fas fa-angle-right"></i></a></li>

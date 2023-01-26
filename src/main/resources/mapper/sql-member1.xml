@@ -36,7 +36,7 @@
 	</update>
 	<!-- 	회원정보 수정 -->
 	<update id="update" parameterType="member1">
-		update member1 set password=#{password}, name=#{name}, phone=#{phone}, gender=#{gender}, birth=#{birth}, email=#{email}
+		update member1 set password=#{password}, name=#{name}, phone=#{phone}, gender=#{gender}, birth=#{birth}, email=#{email}, nick_name=#{nickName}
 		<if test="profile != null">
 			, profile=#{profile}
 		</if>
