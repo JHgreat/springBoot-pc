@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -23,6 +24,7 @@ import com.ch.pc.model.Pcimage;
 import com.ch.pc.model.Seat;
 import com.ch.pc.service.BookmarkService;
 import com.ch.pc.service.PcService;
+import com.ch.pc.service.ReviewService;
 @Controller
 public class PcController {
 	@Autowired
@@ -30,6 +32,9 @@ public class PcController {
 	
 	@Autowired
 	private BookmarkService bs;
+	
+	@Autowired
+	private ReviewService rs;
 	
 	
 	@RequestMapping("/pc/registerForm.do")
@@ -226,6 +231,53 @@ public class PcController {
 		model.addAttribute("result", result);
 		model.addAttribute("pcno", pcno);
 		return "/pc/seatUpdate";
+	}
+	@RequestMapping("/pc/pcMainForm.do")
+	public String pcMainForm(int pcno, Model model, HttpSession session, String pageNum) {
+		String imgSrc = "";
+		Member1 memberSession = (Member1) session.getAttribute("memberSession");
+		if(pageNum == null || pageNum.equals("")) {
+			pageNum = "1";
+		}
+		if (memberSession != null) {
+			int mno = memberSession.getMno();
+			Bookmark bookmark = new Bookmark();
+			bookmark.setMno(mno);
+			bookmark.setPcno(pcno);
+			int bookmarkConfirm = bs.select(bookmark);
+			if (bookmarkConfirm > 0) { // 북마크 한 pc방이면
+				imgSrc = "/pc/resources/images/bookmark_on.png";
+
+			} else if (bookmarkConfirm == 0) { // 북마크 한 pc방이 아니면
+				imgSrc = "/pc/resources/images/bookmark_off.png";
+			}
+		}
+		String id = memberSession.getId();
+		Pc pc = ps.select(pcno);
+		double avgRating = rs.avgRating(pcno);
+
+		List<Pcimage> photolist = ps.listPhoto(pcno);
+		//필요없는구문
+		pc.setSearchKey(pc.getSearchKey());
+		pc.setSearchValue(pc.getSearchValue());		
+		String slist = ps.listSeat(pcno);
+		String[] seatlists = null;
+		if(slist != null) {
+			seatlists = slist.split(",");
+			}
+		//필요없는 구문
+		Fee fee = ps.selectFee(pcno);
+		session.setAttribute("pcnoSession", pcno);
+		
+		model.addAttribute("avgRating", avgRating);
+		model.addAttribute("imgSrc", imgSrc);
+		model.addAttribute("fee", fee);
+		model.addAttribute("seatlists", Arrays.toString(seatlists));
+		model.addAttribute("pc", pc);
+		model.addAttribute("photolist", photolist);
+		model.addAttribute("pageNum", pageNum);
+		model.addAttribute("id", id);
+		return "/pc/pcMainForm";
 	}
 	
 	

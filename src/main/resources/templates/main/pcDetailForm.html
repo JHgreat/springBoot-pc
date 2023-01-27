@@ -170,7 +170,7 @@ $(document).ready( function() {
 						<th:block th:each ="photo,status : ${list}">
 							<th:block th:if = "${status.index != 0}">
 							<div class="item">
-								<img alt="" th:src="@{/images/}+${photo.imagename}">
+								<img alt="" th:src="@{/images/}+${photo.imagename}" >
 							</div>
 							</th:block>
 						</th:block>

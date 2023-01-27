@@ -43,7 +43,7 @@ public class AdminController {
 		
 		return "/admin/pcList";
 	}
-	@RequestMapping("pcPermit")
+	@RequestMapping("/admin/pcPermit.do")
 	public String pcPermit(Pc pc, Model model, String pageNum) {
 		int result = 0;
 		result = ps.permit(pc.getPcno());
@@ -102,4 +102,5 @@ public class AdminController {
 		model.addAttribute("pageNum", pageNum);
 		return "/admin/memberDelete";
 	}
+	
 }
