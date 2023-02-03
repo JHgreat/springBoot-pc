@@ -17,7 +17,7 @@ public class Reservation {
 	private String endtime;
 	private String reserveSeatPosition;
 	private String expiration;
-	private Date reg_date;
+	private Date regDate;
 	
 	private int startRow;
 	private int endRow;

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 기본 설정 -->
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">   
+
+
+$(document).ready( function() {
+	$("#headers").load("/fragments/header.do");  
+	$("#footers").load("/fragments/footer.do");  
+});
+</script>
+<!-- 기본 설정 -->
+<!-- 헤더, 스타일 -->
+<div id="headers"></div> 
+<link rel="stylesheet" th:href="@{/ckeditor/contents.css}">
+<script type="text/javascript" th:src="@{/ckeditor/ckeditor.js}"></script>
+<link rel="stylesheet" th:href="@{/css/bootstrap(1).css}">
+</head>
+<body>
+<div class="content_center">
+<div class="total_content">
+	<form action="/board/boardUpdate.do" method="post">
+		<input type="hidden" name="pcno" th:value="${board.pcno }">
+		<input type="hidden" name="bno" th:value="${board.bno }"> 
+		<input type="hidden" name="pageNum" th:value="${pageNum }">
+		<input type="hidden" name="nick_name" th:value="${board.nickName }">
+		<div>제목</div>
+		<div>
+			<input type="text" name="subject" th:value="${board.subject }" required="required" autofocus="autofocus" class="form-control">
+		</div>
+		<div>내용</div>
+		<div>
+				<textarea rows="10" cols="50" name="content" required="required" th:text="${board.content }"></textarea>
+				<script>
+					CKEDITOR.replace('content', {
+						height : 500
+					});
+				</script>
+			</div>
+		<div>
+			<input type="submit" value="수정" class="btn btn-primary">
+		</div>
+	</form>
+</div>
+</div>
+</body>
+</html>

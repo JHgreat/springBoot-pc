@@ -138,4 +138,22 @@
 	<update id="feeUpdate" parameterType="fee">
 		update fee set w1000=#{w1000},w3000=#{w3000},w5000=#{w5000},w10000=#{w10000},w50000=#{w50000},w100000=#{w100000} where pcno=#{pcno}
 	</update>
+	
+	<!-- 예약입력 -->
+	<insert id="insertReservation" parameterType="reservation">
+		<selectKey keyProperty="reserveno" order="BEFORE" resultType="integer">
+			select nvl(max(reserveno), 0) + 1 reserveno from reservation
+		</selectKey>
+		insert into reservation (reserveno, pcno,mno,reservetime,starttime,endtime,reserveSeatPosition,reg_date) values(#{reserveno},#{pcno}, #{mno}, #{reservetime}, #{starttime},#{endtime}, #{reserveSeatPosition},sysdate)
+	</insert>
+	<select id="reserveList" resultType="reservation">
+		select * from reservation where pcno = #{pcno} and expiration = 'n'
+	</select>
+	<select id="allReserveList" resultType="reservation">
+		select * from reservation where expiration = 'n'
+	</select>
+	<update id="expired">
+		update reservation set expiration = 'y' where reserveno=#{reserveno}
+	</update>
+	
 </mapper>

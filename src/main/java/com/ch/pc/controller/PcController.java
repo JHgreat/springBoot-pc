@@ -2,8 +2,13 @@ package com.ch.pc.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -21,6 +26,7 @@ import com.ch.pc.model.Fee;
 import com.ch.pc.model.Member1;
 import com.ch.pc.model.Pc;
 import com.ch.pc.model.Pcimage;
+import com.ch.pc.model.Reservation;
 import com.ch.pc.model.Seat;
 import com.ch.pc.service.BookmarkService;
 import com.ch.pc.service.PcService;
@@ -278,6 +284,163 @@ public class PcController {
 		model.addAttribute("pageNum", pageNum);
 		model.addAttribute("id", id);
 		return "/pc/pcMainForm";
+	}
+	@RequestMapping("/pc/reservationForm.do")
+	public String reservationForm(int pcno, Model model, HttpSession session) {
+		session.setAttribute("pcnoSession", pcno);
+		String slist = ps.listSeat(pcno);
+		String[] seatlists = null;
+		if (slist != null) {
+			seatlists = slist.split(",");
+		}
+
+		Calendar now_time = Calendar.getInstance();
+		
+		// now_time을 현재시간 +1로 설정, 현재 시간 정보가져오기
+		now_time.set(Calendar.HOUR_OF_DAY, now_time.get(Calendar.HOUR_OF_DAY) + 1);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("HH");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("mm");
+		Date now_time1 = now_time.getTime();
+		String min = sdf2.format(now_time1);
+		String hours = sdf.format(now_time1);
+		int hoursI = Integer.parseInt(hours);
+		int minI = Integer.parseInt(min);
+		
+		if (minI < 30) {
+			hoursI -= 1;
+			minI = 30;
+		} else {
+			minI = 0;
+		}
+		// 예약된 자리 정보 가져오기
+		List<Reservation> reservelist = ps.reserveList(pcno);
+		
+		String allReserveSeatPosition = "";
+		LocalDate nowDay = LocalDate.now();
+		int currentDay = nowDay.getDayOfMonth();	//오늘 일
+		
+		int StartTimeToMin = currentDay * 1440 + hoursI*60 + minI;
+		
+		for (Reservation reservation : reservelist) {
+			String startTime = reservation.getStarttime();
+			
+			String starthour = startTime.substring(0, 2);
+			String startmin = startTime.substring(3, 5);
+			
+			Date regdate = reservation.getRegDate(); 
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
+			String startday = simpleDateFormat.format(regdate);
+			
+			int reservetime = reservation.getReservetime();
+			
+			int startHour =Integer.parseInt(starthour);
+			int startMin =Integer.parseInt(startmin);
+			int startDay = Integer.parseInt(startday);
+			
+			int endTimeToMin = startDay*1440 + startHour*60 + startMin + reservetime;
+			
+			if(endTimeToMin>StartTimeToMin) { //DB에 있는 끝나는 시각이 현재 시간보다 크다면 StartTimeToMin = 현재 시간
+			allReserveSeatPosition += reservation.getReserveSeatPosition() + ",";
+			}
+		}
+		
+		String[] rlists = null;
+		if (allReserveSeatPosition != null) {
+			rlists = allReserveSeatPosition.split(",");
+		}
+
+		Pc pc = ps.select(pcno);
+		Fee fee = ps.selectFee(pcno);
+		System.out.println(fee);
+		model.addAttribute("now_hour", hoursI);
+		model.addAttribute("now_min", minI);
+		model.addAttribute("fee", fee);
+		model.addAttribute("seatlists", Arrays.toString(seatlists));
+		model.addAttribute("rlists", Arrays.toString(rlists));
+		model.addAttribute("pc", pc);
+		return "/pc/reservationForm";
+	}
+
+	@RequestMapping("/pc/reservation.do")
+	public String reservation(Reservation reservation, Model model, HttpSession session) {
+		System.out.println(reservation);
+		int pcno = (Integer) session.getAttribute("pcnoSession");
+		Member1 member1 = (Member1) session.getAttribute("memberSession");
+		reservation.setPcno(pcno);
+		reservation.setMno(member1.getMno());
+		int result = 0;
+		LocalTime now = LocalTime.now();
+		int currentmin = now.getMinute();
+		int currentHour = now.getHour();		
+		String startTime = reservation.getStarttime();
+		String hour = startTime.substring(0, 2);
+		String min = startTime.substring(3, 5);
+		int ihour = Integer.parseInt(hour);
+		int imin = Integer.parseInt(min);
+		int hourToMin = ihour*60;
+		int currentHourToMin = currentHour*60;
+		
+		if(hourToMin + imin <= currentHourToMin+currentmin) {
+			result = -1;
+		}else {
+			result = ps.insertReservation(reservation);
+		}
+		
+		
+		model.addAttribute("result", result);
+		return "/pc/reservation";
+	}
+	@RequestMapping(value = "/pc/starttimeChange.do", produces = "text/html;charset=utf-8") 
+	@ResponseBody
+	public String starttimeChange(String changestarttime, HttpSession session) {
+		LocalDate nowDay = LocalDate.now();
+		
+		String changehour = changestarttime.substring(0, 2);
+		String changemin = changestarttime.substring(3, 5);
+		
+		int changeHour = Integer.parseInt(changehour);
+		int changeMin = Integer.parseInt(changemin);
+		int changeDay = nowDay.getDayOfMonth();	//오늘 일
+		
+		int changeStartTimeToMin = changeDay * 1440 + changeHour*60 + changeMin;
+		
+		int pcno = (Integer) session.getAttribute("pcnoSession");		 
+		List<Reservation> reservelist = ps.reserveList(pcno);
+		String allReserveSeatPosition = "";
+		
+		for (Reservation reservation : reservelist) {
+			String startTime = reservation.getStarttime();
+			
+			String starthour = startTime.substring(0, 2);
+			String startmin = startTime.substring(3, 5);
+			
+			Date regdate = reservation.getRegDate(); 
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");
+			String startday = simpleDateFormat.format(regdate);
+			
+			int reservetime = reservation.getReservetime();
+			
+			int startHour =Integer.parseInt(starthour);
+			int startMin =Integer.parseInt(startmin);
+			int startDay = Integer.parseInt(startday);
+			
+			int endTimeToMin = startDay*1440 + startHour*60 + startMin + reservetime;
+			
+			if(endTimeToMin>changeStartTimeToMin) { //DB에 있는 끝나는 시각이 바꾼 시간보다 크다면
+			allReserveSeatPosition += reservation.getReserveSeatPosition() + ",";
+			}
+		}
+		
+		String[] lists = null;
+		if (allReserveSeatPosition != null) {
+			lists = allReserveSeatPosition.split(",");
+		}
+		
+		
+		String rlists = Arrays.toString(lists);
+		
+		return rlists;
 	}
 	
 	

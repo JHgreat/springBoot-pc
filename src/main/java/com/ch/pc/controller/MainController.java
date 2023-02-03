@@ -75,5 +75,9 @@ public class MainController {
 		model.addAttribute("list", list);
 		return "/main/pcDetailForm";
 	}
+	@RequestMapping("/main/sessionChk.do")
+	public String sessionChk() {
+		return "/main/sessionChk";
+	}
 
 }

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+	integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
+	crossorigin="anonymous">
+<script type="text/javascript" th:inline="javascript">
+	$(document).ready(function() {
+		$("#popup_open").click(function() {
+			$("#popup_wrap").css("display", "block");
+			$("#mask").css("display", "block");
+		});
+		$("#popup_close").click(function() {
+			$("#popup_wrap").css("display", "none");
+			$("#mask").css("display", "none");
+		});
+	});
+	
+	$(function() {		
+		$('#wInsert').click(function() {
+			var sendData = $('#frm1').serialize();
+			$.post('wInsert.do',sendData, function(data) {
+				alert("리뷰가 작성 되었습니다");
+				$('#review').html(data);//필요없는 문구
+				location.reload();
+				frm1.content.value="";// 작성했던 댓글 삭제
+			});	 	 
+			$('#popup_wrap').css("display", "none");
+			$('#mask').css("display", "none");
+			
+		});
+	});
+	
+	function wDelete(pcno,rno) {
+		var sendData = 'pcno='+pcno+'&rno='+rno;
+		$.post('wDelete.do', sendData, function(data) {
+			alert("리뷰가 삭제 되었습니다");
+			$('#review').html(data);
+			location.reload();
+		});
+	}
+	function wUpdate(pcno,rno) {
+		var txt = $('#td_'+rno).text().trim();
+		$("#popup_wrap").css("display", "block");
+		$("#mask").css("display", "block");
+		$('#tr_a').html("<textarea align='center' rows='5' cols='40' id='rt_"+rno+"'>" +
+				txt+"</textarea>");
+		$('#tr_c').html("<div class=star-rating id='pre-rating'>"+"<input type='radio' id='5-stars' name='rating' value='5' onclick='strnum(5)'/>"+
+				  "<label for='5-stars' class='star'>&#9733</label>"+
+				"<input type='radio' id='4-stars' name='rating' value='4' onclick='strnum(4)'/>"+
+				  "<label for='4-stars' class='star'>&#9733</label>"+
+				 "<input type='radio' id='3-stars' name='rating' value='3' onclick='strnum(3)'/>"+
+				  "<label for='3-stars' class='star'>&#9733</label>"+
+				 "<input type='radio' id='2-stars' name='rating' value='2' onclick='strnum(2)'/>"+
+				  "<label for='2-stars' class='star'>&#9733</label>"+
+				 "<input type='radio' id='1-stars' name='rating' value='1' onclick='strnum(1)'/>"+
+				  "<label for='1-stars' class='star'>&#9733</label>"+"</div>");		
+		$('#btn_b').html("<button onclick='up("+pcno+","+rno+")'"+
+			" class='review_likes btn-primary'>수정</button> "+
+			"<button onclick='lst("+pcno+")'" +
+			" class='review_likes btn-danger'>취소</button>");
+	}
+	function strnum(num) {
+		$('#pre-rating').val(num);
+	}
+	
+	function lst(pcno) {
+		$('#mask').load('/pc/reviewList.do?pcno='+pcno);
+	}
+	function up(pcno,rno) {
+		var sendData = "content="+$('#rt_'+rno).val()+"&pcno="+pcno+"&rno="+rno+"&rating="+$('#pre-rating').val();
+		$.post("wUpdate.do", sendData, function(data) {
+			alert("리뷰 수정 되었습니다");
+			$('#review').html(data);
+		});
+	} 
+	function wLikes(pcno,rno,pageNum) {
+		var sendData = 'pcno='+pcno+'&rno='+rno+'&pageNum='+pageNum;
+		$.post('review_likes.do', sendData, function(data) {
+			$('#review').html(data);
+		});
+	}
+	
+</script>
+<style type="text/css">
+/* 별점 */
+.star-rating {
+  border:solid 1px white;
+  display:flex;
+  flex-direction: row-reverse;
+  font-size:1.5em;
+  justify-content:space-around;
+  padding:0 .2em;
+  text-align:center;
+  width:5em;
+}
+
+.star-rating input {
+  display:none;
+}
+
+.star-rating label {
+  font-size:50px;
+  color:#ccc;
+  cursor:pointer;
+}
+
+.star-rating :checked ~ label {
+  color:#f90;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color:#fc0;
+}
+
+.btn_review {
+	display: inline-block;
+	vertical-align: top;
+	margin: -5px 0 1px 8px;
+	width: 86px;
+	height: 29px;
+	text-align: center;
+	color: #000;
+	font-weight: bold;
+	font-size: 13px;
+	line-height: 28px;
+	border: 1px solid #b7b7b7;
+	border-radius: 3px;
+	background-color: #fff;
+}
+
+#popup_wrap {
+	width: 560px;
+	height: 470px;
+	background: #fff;
+	border: solid 1px #666666;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin: -250px 0 0 -250px;
+	z-index: 9999;
+	display: none;
+}
+
+#mask {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background: rgba(0, 0, 0, 0.7) repeat;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	display: none;
+}
+
+.popup-cont01 {
+	width: 478px;
+	margin: 40px auto;
+	text-align: center;
+}
+.review_likes{
+/* 	width: 50px; */
+/* 	font-size: 12px; */
+	height: 30px;
+	margin: 10px 1px;
+}
+.review_list{
+	display: flex;
+	width: 100%;
+	align-items: center;
+}
+.review_btn {
+	display: flex;
+	width: 100%;
+	justify-content: flex-end;
+	align-items: center;
+}
+.review_writer{
+	display:flex;
+	width: 100%;
+	align-items: flex-end;
+ 	fonr-size: 6px; 
+}
+.review_reg_date{
+	margin-left: 5px;
+ 	font-size: 4px; 
+}
+ .reviewList {
+  	width: 90%;  
+ } 
+.review_nick{
+	color: black;
+	font-weight: bold;
+	font-size: 13px;
+}
+.btn_size {
+  	width: 43px;  
+  	height: 27px; 
+}
+.paging {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.review_star_on {
+   color:#f90;
+   font-size:13px;
+}
+
+.review_star_off {
+     color:#ccc;
+     font-size:13px;
+}
+.origin_content {
+	font-size: 15px;
+}
+.rightTitle {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	position: relative;
+}
+.reviewBtn {
+	position: absolute;
+	right: 5%;
+	top: -5px;
+}
+.reviewText {
+	resize: none;
+}
+.reBtns {
+	margin-top: 15px;
+}
+	.margin-btn {
+	margin: 0 2px;
+}
+</style>
+</head>
+<body>
+	<div>
+		<!-- 레이어 팝업 -->
+		<div id="popup_wrap">
+			<div class="popup-cont01" align="center" id="popup-cont">
+				<form action="" name="frm1" id="frm1">
+					<input type="hidden" name="pcno" th:value="${review.pcno }"> <input
+						type="hidden" name="pageNum" th:value="${pageNum }"> <input
+						type="hidden" name="mno" th:value="${memberSession.mno }">
+					<div>
+						<strong>평점 등록</strong>
+					</div>
+					<div class="input_star" align="center">
+						<div class="star-rating" id="tr_c">
+							  <input type="radio" id="5-stars" name="rating" value="5"/>
+							  <label for="5-stars" class="star">&#9733;</label>
+							  <input type="radio" id="4-stars" name="rating" value="4"/>
+							  <label for="4-stars" class="star">&#9733;</label>
+							  <input type="radio" id="3-stars" name="rating" value="3"/>
+							  <label for="3-stars" class="star">&#9733;</label>
+							  <input type="radio" id="2-stars" name="rating" value="2"/>
+							  <label for="2-stars" class="star">&#9733;</label>
+							  <input type="radio" id="1-star" name="rating" value="1"/>
+							  <label for="1-star" class="star">&#9733;</label>
+						</div>
+						<strong id="pointStarRatingValue" class="st_point"></strong>
+						<p class="point_notice">평점을 선택하세요</p>
+					</div>
+					리뷰 작성
+					<div class="review_title" id="tr_a">
+						<textarea class="reviewText" rows="5" cols="40" name="content" placeholder="리뷰를 남겨주세요.pc방과 관련없는 내용은 제재를 받을 수 있습니다."></textarea>
+					</div>
+					<div class="reBtns" id="btn_b">
+						<input type="button" value="확인" id="wInsert" class="btn btn-primary"> &nbsp;&nbsp;
+						<button id="popup_close" class="btn btn-primary">닫기</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="rightTitle">
+			<h4>리뷰</h4>
+			<button id="popup_open" class="reviewBtn btn btn-primary">리뷰 등록</button>
+		</div>
+		<div class="reviewList">
+				<th:block th:if ="${#lists.isEmpty(list)}">
+					<div>리뷰가 없습니다.</div>
+				</th:block>
+				<th:block th:if ="${!#lists.isEmpty(list)}">
+					<th:block th:each="review : ${list}">
+						<div class="review_update">
+							<th:block th:if ="${review.del == 'y' }">
+								<div>
+									<br><span>삭제된 리뷰입니다.</span><br>
+								</div>
+							</th:block>
+							<th:block th:if="${review.del != 'y' }">
+								<div class="review_list">
+									<div class="review_writer">
+										<div class="review_nick" th:text="${review.nickName}"></div>
+										<!-- <th:block th:each ="i : ${#numbers.sequence(pb.startPage,pb.endPage)}"> -->
+										<th:block th:each="rating: ${#numbers.sequence(1,review.rating)}">
+										<div class="review_star_on">&#9733</div>
+                             			</th:block>
+                             			<th:block th:if= "${review.rating != 5}">
+                             			<th:block th:each="rating: ${#numbers.sequence(review.rating,4)}">
+										<div class="review_star_off">&#9734</div>
+                             			</th:block>
+                             			</th:block>
+										<div class="review_reg_date" th:text="${#dates.format(review.regDate, 'yyyy-MM-dd HH:mm:ss')}">
+										</div>
+									</div>
+									<div class="review_btn">
+										<!-- 추천을 안한 사람 일 때 -->
+										<th:block th:if ="${review.likesConfirm == 0}">
+											<button class="review_likes btn-secondary btn_size" th:pcno ="${review.pcno}" th:rno ="${review.rno}" th:pageNum="${pageNum}" 
+												th:onclick="wLikes(this.getAttribute('pcno'),this.getAttribute('rno'),this.getAttribute('pageNum'))">
+												<i class="far fa-thumbs-up"></i><span th:text="${review.likes }"></span></button>
+										</th:block>
+										<!-- 추천을 한 사람 일때 -->
+										<th:block th:if ="${review.likesConfirm == 1}">
+											<button class="review_likes btn-secondary btn_size" th:pcno ="${review.pcno}" th:rno ="${review.rno}" th:pageNum="${pageNum}" 
+												th:onclick="wLikes(this.getAttribute('pcno'),this.getAttribute('rno'),this.getAttribute('pageNum'))">
+												<i class="fas fa-thumbs-up"></i><span th:text="${review.likes }"></span></button>
+										</th:block>
+										<!-- 수정/삭제 -->
+										<th:block th:if="${memberSession.mno == review.mno || memberSession.id == 'admin'}">
+											<div>
+												<th:block th:if="${memberSession.mno == review.mno }">
+													<button class="review_likes btn-primary btn_size" th:pcno ="${review.pcno}" th:rno ="${review.rno}" th:onclick="wUpdate(this.getAttribute('pcno'),this.getAttribute('rno'))">
+														<i class="far fa-edit"></i>
+													</button>
+												</th:block>
+												<button class="review_likes btn-danger btn_size" th:pcno ="${review.pcno}" th:rno ="${review.rno}" th:onclick="wDelete(this.getAttribute('pcno'),this.getAttribute('rno'))">
+													<i class="far fa-trash-alt"></i>
+												</button>
+											</div>
+										</th:block>
+									</div>
+									<br>
+								</div>
+								<div class="origin_content" th:id="'td_'+${review.rno }">
+									<pre th:text="${review.content}"></pre>
+								</div>
+							</th:block>
+						</div>
+						<hr>
+						<br>
+					</th:block>
+					<br>
+					<br>
+				</th:block>
+		</div>
+	</div>
+	<th:block th:if ="${!#lists.isEmpty(list)}">
+	<ul class="pagination paging">
+	<!-- 시작 페이지가 pagePerBlock보다 크면 앞에 보여줄 것이 있다 -->
+		<th:block th:if ="${pb.startPage > pb.pagePerBlock }">
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/pa/pcMainForm.do(pageNum = 1, pcno= ${review.pcno})}"> 
+				<i class="fas fa-angle-double-left"></i></a></li>
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/pa/pcMainForm.do(pageNum = ${pb.startPage-1}, pcno= ${review.pcno})}"> 
+				<i class="fas fa-angle-left"></i></a></li>
+		</th:block>
+		<th:block th:each ="i : ${#numbers.sequence(pb.startPage,pb.endPage)}">
+			<th:block th:if ="${pb.currentPage==i }">
+				<li><a class="margin-btn btn btn-outline-primary active" th:href="@{/pc/pcMainForm.do(pageNum = ${i}, pcno= ${review.pcno})}" th:text="${i}"></a></li>
+			</th:block>
+			<th:block th:if ="${pb.currentPage!=i }">
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/pc/pcMainForm.do(pageNum = ${i}, pcno= ${review.pcno})}" th:text="${i}"></a></li>
+			</th:block>
+		</th:block>		
+		<!-- 보여줄 것이 남아있는 경우에는 endPage보다 totalPage가 큰경우 -->
+		<th:block th:if ="${pb.endPage < pb.totalPage }">
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/pc/pcMainForm.do(pageNum = ${pb.endPage+1}, pcno=${review.pcno})}">
+				<i class="fas fa-angle-right"></i></a></li>
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/pc/pcMainForm.do(pageNum = ${pb.totalPage}, pcno=${review.pcno})}">
+				<i class="fas fa-angle-double-right"></i></a></li>
+		</th:block>
+	</ul>
+	</th:block>
+	<div id="mask"></div>
+	
+</body>
+</html>

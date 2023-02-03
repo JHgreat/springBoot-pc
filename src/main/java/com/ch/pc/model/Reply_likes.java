@@ -8,5 +8,5 @@ import lombok.Data;
 @Alias("reply_likes")
 public class Reply_likes {
 	private int mno;
-	private int bno;
+	private int rno;
 }

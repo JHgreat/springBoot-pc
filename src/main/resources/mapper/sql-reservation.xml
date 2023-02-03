@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.pc.mapper.ReservationDao">
+	<!-- 예매내역 -->
+ 	<select id="getTotal" parameterType="integer" resultType="reservation">
+ 		select count(*) from reservation where mno=#{mno}
+ 	</select>
+ 	<select id="nList" parameterType="reservation" resultType="reservation">
+		select r.*, p.pcname  from reservation r, pc p where r.pcno=p.pcno and r.mno=#{mno} and expiration = 'n' order by r.reg_date
+ 	</select>
+ 	
+ 	<select id="yList" parameterType="reservation" resultType="reservation">
+		select r.*, p.pcname  from reservation r, pc p where r.pcno=p.pcno and r.mno=#{mno} and expiration = 'y' order by r.reg_date
+ 	</select>
+</mapper>

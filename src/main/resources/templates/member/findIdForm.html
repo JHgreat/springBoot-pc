@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">   
+
+
+$(document).ready( function() {
+
+$("#headers").load("/fragments/header.do");  // 원하는 파일 경로를 삽입하면 된다
+$("#footers").load("/fragments/footer.do");  // 추가 인클루드를 원할 경우 이런식으로 추가하면 된다
+
+});
+</script>
+<!-- 헤더, 스타일 -->
+<div id="headers"></div>
+<style type="text/css">
+body {
+		background-color: #2c3e50;
+	}
+	.content_center{
+		display: flex;
+		justify-content: center;
+		position: relative;
+		}
+	.total_content{
+		width: 90%; 
+		height: 500px;
+		border-radius: 20px;
+		background-color: white;
+	}
+	.login_dis {
+	position: relative;
+	justify-content: center;
+	left: 50%;
+}
+	.jumbotron {
+		margin-top: 100px;
+	}
+</style> 
+</head>
+<body>
+<div class="content_center">
+<div class="total_content ">
+	<div class="login_dis">
+		<div class="jumbotron">
+		<h3>아이디 찾기</h3>
+		<form action="findId.do" method="post" name="frm">
+			<div class="form-group">
+				<input type="text" name="name" required="required" autofocus="autofocus" placeholder="이름" class="form-control">
+			</div>
+			<div class="form-group">
+				<input type="tel" name="phone" required="required" pattern="010-\d{3,4}-\d{4}"
+						placeholder="ex)010-1111-1111" title="전화형식 010-숫자3/4-숫자4" class="form-control">
+			</div>
+			<div class="btn-group">
+				<input type="submit" value="확인" class="btn btn-primary">
+			</div>
+		</form>
+		<div>
+			<button onclick="location.href='/member/findPwForm.do'" class="btn btn-primary">비밀번호 찾기</button>
+		</div>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>

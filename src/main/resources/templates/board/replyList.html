@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+	integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
+	crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style type="text/css">
+.font_family {
+	font-family: InfinitySans-RegularA1;
+	margin: 0 50px;
+}
+.reply_likes{
+	width: 45px;
+	font-size: 12px;
+	height: 25px;
+	margin: 0 1px;
+	border-radius: 4px;
+
+	border: 0;
+}
+.reply_list{
+	display: flex;
+	width: 100%;
+	align-items: center;
+}
+.reply_btn {
+	display: flex;
+	width: 100%;
+	justify-content: flex-end;
+	align-items: center;
+}
+.reply_writer{
+	display:flex;
+	width: 100%;
+	align-items: flex-end;
+}
+.reply_reg_date{
+	margin-left: 5px;
+	font-size: 4px;
+}
+.container {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	margin: 0;
+	margin-top: -30px;
+}
+.btn_likes{
+	margin: 2px 5px;
+}
+.btn-primary {
+	margin: 5px;
+}
+.container_inner {
+	width: 100%;
+	margin-top: -30px;
+}
+</style>
+<script type="text/javascript">
+function rDelete(pcno,bno,rno) {
+	var sendData = 'pcno='+pcno+'&bno='+bno+'&rno='+rno;
+	$.post('/board/rDelete.do', sendData, function(data) {
+		alert("댓글이 삭제 되었습니다");
+		$('#disp').html(data);
+	});
+}
+function rUpdate(pcno,bno,rno) {
+	var txt = $('#td_'+rno).text();	
+	$('#td_'+rno).html("<textarea rows='3' cols='50' id='rt_"+rno+"'>" +
+			txt+"</textarea>");
+	$('#btn_'+rno).html("<button onclick='up("+pcno+","+bno+","+rno+")'"+
+		" class='reply_likes btn-primary'><i class='far fa-check-circle'></i></button> "+
+		"<button onclick='lst("+pcno+","+bno+")'" +
+		" class='reply_likes btn-danger'><i class='far fa-times-circle'></i></button>");
+}
+function lst(pcno,bno) {
+	$('#disp').load('/board/replyList.do?pcno='+pcno+'&bno='+bno);
+}
+function up(pcno,bno,rno) {
+	var sendData = "content="+$('#rt_'+rno).val()+"&pcno="+pcno+"&bno="+bno+"&rno="+rno;
+	$.post("/board/rUpdate.do", sendData, function(data) {
+		alert("댓글 수정 되었습니다");
+		$('#disp').html(data);
+	});
+}
+function rLikes(pcno,bno,rno) {
+	var sendData = 'pcno='+pcno+'&bno='+bno+'&rno='+rno;
+	$.post('/board/reply_likes.do', sendData, function(data) {
+		$('#disp').html(data);
+	});
+}
+</script>
+</head>
+<body style="width: 100%;">
+		<div class="container_inner">
+			<th:block th:if ="${#lists.isEmpty(list)}">		
+				<div>댓글이 없습니다.</div>
+			</th:block>
+			<th:block th:if="${!#lists.isEmpty(list)}">
+				<th:block th:each="board_reply:${list}">
+					<hr>
+					<div class="reply_update">
+						<th:block th:if="${board_reply.del == 'y' }">
+							<div><br>
+							<span>삭제된 댓글입니다.</span><br>
+							</div>
+						</th:block>
+						<th:block th:if="${board_reply.del != 'y' }">
+ 							<div class="reply_list">
+								<div class="reply_writer">
+									<div style="color: black;" th:text="${board_reply.nickName}"></div>
+									<div class="reply_reg_date" th:text="${#dates.format(board_reply.regDate, 'yyyy-MM-dd HH:mm:ss')}">
+									</div>
+								</div>
+								<div class="reply_btn">
+									<!-- 추천을 안한 사람 일 때 -->
+									<th:block th:if="${board_reply.likesConfirm == 0}"> 
+ 										<button class="reply_likes btn-secondary btn_likes" th:pcno="${board_reply.pcno}" th:bno="${board_reply.bno}" th:rno="${board_reply.rno}"
+ 											th:onclick="rLikes(this.getAttribute('pcno'),this.getAttribute('bno'),this.getAttribute('rno'))"><i class="far fa-thumbs-up"></i><span th:text="${board_reply.likes}"></span></button>
+									</th:block>
+									<!-- 추천을 한 사람 일때 -->
+									<th:block th:if="${board_reply.likesConfirm == 1}">
+										<button class="reply_likes btn-secondary btn_likes" th:pcno="${board_reply.pcno}" th:bno="${board_reply.bno}" th:rno="${board_reply.rno}"
+ 											th:onclick="rLikes(this.getAttribute('pcno'),this.getAttribute('bno'),this.getAttribute('rno'))"><i class="fas fa-thumbs-up"></i><span th:text="${board_reply.likes}"></span></button>
+									 </th:block>
+									<!-- 수정/삭제 -->
+									<th:block th:if="${memberSession.mno == board_reply.mno or memberSession.id == 'admin'}">
+										<div th:id="'btn_'+${board_reply.rno }">
+											<th:block th:if="${memberSession.mno == board_reply.mno }">
+												<button class="reply_likes btn btn-primary"	th:pcno="${board_reply.pcno}" th:bno="${board_reply.bno}" th:rno="${board_reply.rno}"
+												th:onclick="rUpdate(this.getAttribute('pcno'),this.getAttribute('bno'),this.getAttribute('rno'))"><i class="far fa-edit"></i></button>
+											</th:block>
+												<button class="reply_likes btn btn-danger" th:pcno="${board_reply.pcno}" th:bno="${board_reply.bno}" th:rno="${board_reply.rno}"
+												th:onclick="rDelete(this.getAttribute('pcno'),this.getAttribute('bno'),this.getAttribute('rno'))"><i class="far fa-trash-alt"></i></button>
+										</div>
+									</th:block>
+								</div>
+								<br>
+							</div>
+							<div class="origin_content" th:id="'td_'+${board_reply.rno }"><pre th:utext="${board_reply.content}"></pre></div>
+						</th:block>
+					</div><br>
+				</th:block><br><br>
+			</th:block>
+		</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<span th:if="${result} > 0">
+		<script type="text/javascript" th:inline="javascript">
+			var id = /*[[${member.id}]]*/{};
+			alert("회원님의 아이디는 "+id+"입니다.");
+			location.href = "/member/loginForm.do"
+		</script>
+	</span>
+	<span th:if="${result} == 0"> 
+		<script type="text/javascript">
+		alert("다시 한번 시도해주세요.");
+		history.go(-1);
+		</script>
+	</span>
+	<span th:if="${result} == -1"> 
+		<script type="text/javascript">
+		alert("존재하지 않는 회원정보입니다.");
+		history.go(-1);
+		</script>
+	</span>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<span th:if="${result} > 0"> 
+		<script type="text/javascript" th:inline="javascript">
+			alert("작성되었습니다.");
+			var pcno = /*[[${board.pcno}]]*/{};
+			var pageNum = /*[[${pageNum}]]*/{};
+			location.href="/board/boardList.do?pcno="+pcno+"&pageNum="+pageNum;
+		</script>
+	</span>
+	<span th:if="${result} == 0"> 
+		<script type="text/javascript">
+			alert("작성 실패하였습니다. 다시 시도해주세요.");
+			history.go(-1);
+		</script>
+	</span>
+</body>
+</html>

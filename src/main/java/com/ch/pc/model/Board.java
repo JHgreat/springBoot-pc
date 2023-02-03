@@ -10,14 +10,14 @@ public class Board {
 	private int bno;
 	private String subject;
 	private String content;
-	private Date reg_date;
-	private int read_cnt;
+	private Date regDate;
+	private int readCnt;
 	private int likes;
 	private String del;
 	private int mno;
 	private int pcno;
 	// 게시판에 보여주기 위해
-	private String nick_name;
+	private String nickName;
 	//검색
 	private int startRow;
 	private int endRow;

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- 기본 설정 -->
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">   
+
+
+$(document).ready( function() {
+	$("#headers").load("/fragments/header.do");  
+	$("#footers").load("/fragments/footer.do");  
+});
+</script>
+<!-- 기본 설정 -->
+<!-- 헤더, 스타일 -->
+<div id="headers"></div> 
+<style type="text/css">
+.paging {
+	display: flex;
+	justify-content: center;
+}
+body {
+		background-color: #2c3e50;
+	}
+	.content_center{
+		display: flex;
+		justify-content: center;
+		position: relative;
+		}
+	.total_content{
+		width: 90%; 
+		height: 90%;
+		border-radius: 20px;
+		background-color: white;
+		padding-left: 50px;
+	}
+		.form-control {
+	width: 200px;
+}
+
+	.paging {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.join_content {
+	display: flex;
+		justify-content: flex-end;
+}
+.btn_ok{
+	margin: 30px;
+}
+	.margin-btn {
+	margin: 0 2px;
+}
+</style>
+</head>
+<body>
+<div class="content_center">
+<div class="total_content">
+<form action="/board/boardList.do" method="post">
+	<input type="hidden" name="pageNum" value="1">
+	<input type="hidden" name="pcno" th:value="${board.pcno}">
+	<div class="join_content">
+	<select name="searchKey" style="margin:5px;">
+		<th:block th:each="search, i : ${Etitle}">
+			<th:block th:if = "${search==board.searchKey }">
+				<option th:value="${search}" selected="selected"><th:block th:text ="${title[i.index]}"></th:block></option>
+			</th:block>
+			<th:block th:if = "${search!=board.searchKey }">
+				<option th:value="${search}" ><th:block th:text ="${title[i.index]}"></th:block></option>
+			</th:block>
+		</th:block>
+	</select>
+		<input type="text" name="searchValue" th:value="${board.searchValue}" class="form-control" placeholder="검색어를 입력하세요.">
+		<input type="submit" value="검색" class="btn btn-primary">
+	</div>
+</form>
+<div class="form_line">
+	<table class="table table-hover">
+		<tr class="table-primary"><th>번호</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회수</th><th>좋아요</th></tr>
+		<th:block th:if="${#lists.isEmpty(list)}">
+			<tr><td colspan="6">작성된 게시글이 없습니다</td></tr>
+		</th:block>
+		<th:block th:if="${!#lists.isEmpty(list)}">
+			<th:block th:with ="num=${total}">
+			<th:block th:with ="pageNum=${pageNum}">
+			<th:block th:each="board2, status : ${list}">
+				<th:block th:if="${board2.del == 'y' }">
+				<tr>
+					<td th:text="${num-status.index}-${(pageNum-1)}*10" ></td>
+					<td colspan="5">삭제된 글입니다</td>
+				</tr>
+				</th:block>
+				<th:block th:if="${board2.del != 'y' }">
+				<tr th:onclick="|location.href='@{/board/boardContent.do(pcno=${board2.pcno},bno=${board2.bno},pageNum=${pb.currentPage},searchKey=${board.searchKey},searchValue=${board.searchValue})}'|" style="cursor:hand">
+					<td th:text="${num-status.index}-${(pageNum-1)}*10" ></td>
+					<td th:text="${board2.subject }"></td>
+					<td th:text="${board2.nickName }"></td>
+					<td th:text="${board2.regDate }"></td>
+					<td th:text="${board2.readCnt }"></td>
+					<td th:text="${board2.likes }"></td></tr>
+				</th:block>
+			</th:block>
+			</th:block>
+			</th:block>
+		</th:block>
+	</table>
+	<th:block th:if="${!#lists.isEmpty(list)}">
+	<ul class="pagination paging">
+	<!-- 시작 페이지가 pagePerBlock보다 크면 앞에 보여줄 것이 있다 -->
+		<th:block th:if ="${pb.startPage > pb.pagePerBlock }">
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/board/boardList.do(pageNum = 1, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}"> 
+				<i class="fas fa-angle-double-left"></i></a></li>
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/board/boardList.do(pageNum = ${pb.startPage-1}, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}"> 
+				<i class="fas fa-angle-left"></i></a></li>
+		</th:block>
+		<th:block th:each ="i : ${#numbers.sequence(pb.startPage,pb.endPage)}">
+			<th:block th:if ="${pb.currentPage==i }">
+				<li><a class="margin-btn btn btn-outline-primary active" th:href="@{/board/boardList.do(pageNum = ${i}, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}" th:text="${i}"></a></li>
+			</th:block>
+			<th:block th:if ="${pb.currentPage!=i }">
+				<li><a class="margin-btn btn btn-outline-primary" th:href="@{/board/boardList.do(pageNum = ${i}, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}" th:text="${i}"></a></li>
+			</th:block>
+		</th:block>
+		<!-- 보여줄 것이 남아있는 경우에는 endPage보다 totalPage가 큰경우 -->
+		<th:block th:if ="${pb.endPage < pb.totalPage }">
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/board/boardList.do(pageNum = ${pb.endPage+1}, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}">
+				<i class="fas fa-angle-right"></i></a></li>
+			<li><a class="margin-btn btn btn-outline-primary" th:href="@{/board/boardList.do(pageNum = ${pb.totalPage}, searchKey = ${board.searchKey}, searchValue = ${board.searchValue}, pcno = ${board.pcno})}">
+				<i class="fas fa-angle-double-right"></i></a></li>
+		</th:block>
+	</ul>
+	</th:block>
+</div>
+<button class="btn btn-primary btn_ok" th:onclick="|location.href='@{/board/boardInsertForm.do(pcno=${board.pcno},bno=0,pageNum=1)}'|" >글쓰기</button>
+</div>
+</div>
+</body>
+</html>

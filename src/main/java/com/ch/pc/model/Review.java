@@ -13,12 +13,12 @@ public class Review {
 	private int pcno;
 	private int mno;
 	private String content;
-	private Date reg_date;
+	private Date regDate;
 	private int likes;
 	private int rating;
 	private String del;
 	
-	private String nick_name;
+	private String nickName;
 	
 	private int likesConfirm;
 	

@@ -69,13 +69,14 @@ $(document).ready( function() {
 		// 피씨방 북마크 클릭
 		$.post("/pc/bookmark.do", "pcno="+pcno, function(data) {
 			var imgSrc = data;
+			console.log(imgSrc);
 			$(".bookmark").attr("src", imgSrc);
 		});
 	} 
 	$(function() {
 		var pcno = /*[[${pc.pcno}]]*/{};
 		// 현재 게시글에 해당하는 댓글을 가져와서 보여줘라
-		$('#review').load('reviewList.do?pcno='+pcno+'&pageNum='+pageNum);
+		$('#review').load('/pc/reviewList.do?pcno='+pcno+'&pageNum='+pageNum);
 	});
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -88,7 +89,7 @@ $(document).ready( function() {
 		<div class="pcLikes">
 			<th:block th:if ="${id != null}">
 				<th:block th:if="${id != 'admin'}">
-					<img class="bookmark" th:pcno ="pc.pcno" onclick="bookmarkClick(this.getAttribute('pcno'))" alt="" th:src="${imgSrc}" width="30px" height="30px">
+					<img class="bookmark" th:pcno ="${pc.pcno}" th:onclick="bookmarkClick(this.getAttribute('pcno'))" alt="" th:src="${imgSrc}" width="30px" height="30px">
 				</th:block>
 			</th:block>
 		</div>
@@ -106,7 +107,7 @@ $(document).ready( function() {
 			<button class="btn-between btn btn-primary" th:onclick="|location.href='@{/pc/pcList.do(pageNum=${pageNum})}'|">목록</button>
 		</th:block>
 		<button class="btn-between btn btn-primary btn-reserve" th:onclick="|location.href='@{/board/boardList.do(pcno=${pc.pcno})}'|">게시판</button>		
-		<button th:onclick="|location.href='@{/reservation/reservationForm.do(pcno=${pc.pcno})}'|" class="btn-between btn btn-primary btn-reserve">좌석예약</button>
+		<button th:onclick="|location.href='@{/pc/reservationForm.do(pcno=${pc.pcno})}'|" class="btn-between btn btn-primary btn-reserve">좌석예약</button>
 	</div>
 	<div class="left" align="center">
 		<div id="carousel-example-generic" class="carousel slide"

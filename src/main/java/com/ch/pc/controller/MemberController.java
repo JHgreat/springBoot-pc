@@ -17,10 +17,12 @@ import com.ch.pc.model.Bookmark;
 import com.ch.pc.model.Fee;
 import com.ch.pc.model.Member1;
 import com.ch.pc.model.Pc;
+import com.ch.pc.model.Reservation;
 import com.ch.pc.service.BookmarkService;
 import com.ch.pc.service.MemberService;
 import com.ch.pc.service.PageBean;
 import com.ch.pc.service.PcService;
+import com.ch.pc.service.ReservationService;
 
 
 @Controller
@@ -34,6 +36,9 @@ public class MemberController {
 	
 	@Autowired
 	private BookmarkService bs;
+	
+	@Autowired
+	private ReservationService rs;
 	
 	@RequestMapping("/member/loginForm.do")
 	public String loginForm() {
@@ -268,5 +273,63 @@ public class MemberController {
 		model.addAttribute("total", total);
 		return "/member/mybookmark";
 	}
+	
+	@RequestMapping("/member/reserveList.do")
+	public String reserveList(Reservation reservation, HttpSession session, Model model, String pageNum) {
+		Member1 memberSession = (Member1)session.getAttribute("memberSession");
+		 Pc pc = ps.selectMno(memberSession.getMno());
+	     if(pc != null) {
+		     int pcno = pc.getPcno();
+		     Fee f1 = ps.selectFee(pcno);
+	    	 model.addAttribute("pc",pc);
+	    	 model.addAttribute("f1", f1);
+	     }	  	     
+		int mno = memberSession.getMno();
+		List<Reservation> nList = rs.nList(mno);
+		List<Reservation> yList = rs.yList(mno);
+		model.addAttribute("mno", mno);
+		model.addAttribute("nList", nList);
+		model.addAttribute("yList", yList);
+		model.addAttribute("pageNum", pageNum);
+		
+		return "/member/reserveList";
+	}
+	
+	@RequestMapping("/member/findIdForm.do")
+	public String findIdForm() {
+		return "/member/findIdForm";
+	}
+	@RequestMapping("/member/findId.do")
+	public String findIdResult(Member1 member1, Model model) {
+		int result = 0;
+		Member1 member2 = ms.findId(member1);
+		if (member2 != null) {
+			result = 1;
+			model.addAttribute("member", member2);
+		} else {
+			result = -1;
+		}
+		model.addAttribute("result", result);
+		return "member/findId";
+	}
+	@RequestMapping("/member/findPwForm.do")
+	public String findPasswordForm() {
+		return "/member/findPwForm";
+	}
+	// 비밀번호 찾기
+	@RequestMapping("/member/findPw.do")
+	public String findPw(Member1 member1, Model model) {
+		int result = 0;
+		Member1 member2 = ms.findPw(member1);
+		if (member2 != null) {
+			result = 1;
+			model.addAttribute("member", member2);
+		} else {
+			result = -1;
+		}
+		model.addAttribute("result", result);
+		return "/member/findPw";
+	}
+	
 
 }
